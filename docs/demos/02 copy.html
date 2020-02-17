@@ -10,15 +10,15 @@
     #diagramContainer {
       padding: 20px;
       width: 80%;
-      height: 200px;
+      height: 400px;
       border: 1px solid gray;
     }
 
     .item {
+      position: absolute;
       height: 80px;
       width: 80px;
       border: 1px solid blue;
-      float: left;
     }
   </style>
 </head>
@@ -26,7 +26,7 @@
 <body>
   <div id="diagramContainer">
     <div id="item_left" class="item"></div>
-    <div id="item_right" class="item" style="margin-left:50px;"></div>
+    <div id="item_right" class="item" style="left:150px;"></div>
   </div>
       <!-- <script src="https://cdn.jsdelivr.net/npm/jsplumb@2.8.0/dist/js/jsplumb.min.js"></script> -->
       <script src="https://cdn.jsdelivr.net/npm/jsplumb@2.12.0/dist/js/jsplumb.js"></script>
@@ -35,33 +35,14 @@
   <script>
     /* global jsPlumb */
     jsPlumb.ready(function () {
-      jsPlumb.setContainer('diagramContainer')
-
-      var common = {
-        isSource: true,
-        isTarget: true,
-        connector: ['Straight']
-      }
-
-      jsPlumb.addEndpoint('item_left', {
-        anchors: ['Right']
-      }, common)
-
-      jsPlumb.addEndpoint('item_right', {
-        anchor: 'Left'
-      }, common)
-
-      jsPlumb.bind('beforeDrop', function (info) {
-        var a = 10
-        var b = 2
-        if (a < b) {
-          console.log('链接会自动建立')
-          return true // 链接会自动建立
-        } else {
-          console.log('链接取消')
-          return false // 链接不会建立，注意，必须是false
-        }
+      jsPlumb.connect({
+        source: 'item_left',
+        target: 'item_right',
+        endpoint: 'Rectangle'
       })
+
+      jsPlumb.draggable('item_left')
+      jsPlumb.draggable('item_right')
     })
   </script>
 </body>

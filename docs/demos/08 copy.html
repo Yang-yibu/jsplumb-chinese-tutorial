@@ -28,8 +28,8 @@
     <div id="item_left" class="item"></div>
     <div id="item_right" class="item" style="margin-left:50px;"></div>
   </div>
-      <!-- <script src="https://cdn.jsdelivr.net/npm/jsplumb@2.8.0/dist/js/jsplumb.min.js"></script> -->
-      <script src="https://cdn.jsdelivr.net/npm/jsplumb@2.12.0/dist/js/jsplumb.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/jsplumb@2.8.0/dist/js/jsplumb.min.js"></script>
+      <!-- <script src="https://cdn.jsdelivr.net/npm/jsplumb@2.12.0/dist/js/jsplumb.js"></script> -->
     <!-- <script src="https://cdn.bootcss.com/jsPlumb/2.12.0/js/jsplumb.min.js"></script> -->
 
   <script>
@@ -43,24 +43,21 @@
         connector: ['Straight']
       }
 
-      jsPlumb.addEndpoint('item_left', {
-        anchors: ['Right']
+      var a = jsPlumb.addEndpoint('item_left', {
+        anchor: ['Right']
       }, common)
+      console.log(a);
 
       jsPlumb.addEndpoint('item_right', {
         anchor: 'Left'
       }, common)
 
-      jsPlumb.bind('beforeDrop', function (info) {
-        var a = 10
-        var b = 2
-        if (a < b) {
-          console.log('链接会自动建立')
-          return true // 链接会自动建立
-        } else {
-          console.log('链接取消')
-          return false // 链接不会建立，注意，必须是false
-        }
+      jsPlumb.addEndpoint('item_right', {
+        anchor: 'Right'
+      }, common)
+
+      jsPlumb.bind('connection', function (info, originEvent) {
+        // debugger
       })
     })
   </script>

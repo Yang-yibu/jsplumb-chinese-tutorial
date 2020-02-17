@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    #diagramContainer {
+      padding: 20px;
+      width: 80%;
+      height: 200px;
+      border: 1px solid gray;
+    }
+
+    .item {
+      position: absolute;
+      height: 80px;
+      width: 80px;
+      border: 1px solid blue;
+      /* float: left; */
+    }
+
+    .endpoint-img {
+      /* width: 30px !important;
+      height: 30px !important; */
+      transform: scale(0.3);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="diagramContainer" style="position: absolute;">
+    <div id="item_left" class="item"></div>
+    <div id="item_right" class="item" style="left: 150px;"></div>
+  </div>
+      <!-- <script src="https://cdn.jsdelivr.net/npm/jsplumb@2.8.0/dist/js/jsplumb.min.js"></script> -->
+      <script src="https://cdn.jsdelivr.net/npm/jsplumb@2.12.0/dist/js/jsplumb.js"></script>
+    <!-- <script src="https://cdn.bootcss.com/jsPlumb/2.12.0/js/jsplumb.min.js"></script> -->
+
+  <script>
+    /* global jsPlumb */
+    jsPlumb.ready(function () {
+      jsPlumb.setContainer('diagramContainer')
+
+      var common = {
+        isSource: true,
+        isTarget: true,
+        connector: 'Straight',
+        // endpoint: 'Dot',
+        paintStyle: {
+          fill: 'white',
+          outlineStroke: 'blue',
+          strokeWidth: 3
+        },
+        hoverPaintStyle: {
+          outlineStroke: 'lightblue'
+        },
+        connectorStyle: {
+          outlineStroke: 'green',
+          strokeWidth: 1
+        },
+        connectorHoverStyle: {
+          outlineStroke: 'red',
+          strokeWidth: 2
+        }
+      }
+
+      jsPlumb.addEndpoint('item_left', {
+        anchors: ['Right'],
+        // endpoint: ['Dot', {radius: 15, cssClass: 'dot-a dot-b'}]
+      }, common)
+
+      jsPlumb.addEndpoint('item_right', {
+        anchor: 'Left',
+        // endpoint: ['Rectangle', { width: 25 }]
+      }, common)
+
+      jsPlumb.addEndpoint('item_right', {
+        anchor: 'Right',
+        endpoint: ['Image', {
+          src: "http://d.lanrentuku.com/down/png/2001/people_in_bubbles/icons8-man-in-white-shirt.png",
+          cssClass: "endpoint-img",
+        }]
+      }, common)
+      jsPlumb.draggable("item_left", {
+        // grid:[50,50]
+        distance: 20
+      });
+    })
+  </script>
+</body>
+
+</html>
