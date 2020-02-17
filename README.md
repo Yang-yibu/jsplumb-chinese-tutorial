@@ -5,6 +5,7 @@
   - [1.2. jsplumb能干什么？](#12-jsplumb%e8%83%bd%e5%b9%b2%e4%bb%80%e4%b9%88)
   - [1.3. 基本概念](#13-%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5)
     - [1.3.1. Anchors [todo]](#131-anchors-todo)
+      - [静态锚点 Static Anchors](#%e9%9d%99%e6%80%81%e9%94%9a%e7%82%b9-static-anchors)
     - [1.3.2. Connectors [todo]](#132-connectors-todo)
     - [1.3.3. Endpoints [todo]](#133-endpoints-todo)
     - [1.3.4. Overlays [todo]](#134-overlays-todo)
@@ -110,35 +111,156 @@
 
 ### 1.3.1. Anchors [todo]
 锚点类型：
-- 静态锚点
+- 静态锚点 - 固定在父元素上的某个点不能移动
 - 动态锚点
 - 边缘锚点
 - 固定锚点
 
+[官方文档：Anchors 锚点](https://jsplumb.github.io/jsplumb/anchors.html)
+
+#### 静态锚点 Static Anchors
+
+jsPlumb 有九个默认的锚点位置，可以用于指定连接器连接到元素的位置。他们是元素的四个角、元素中心和元素每条边的中点。
+- Top (TopCenter) `[0.5, 0, 0, -1]` 
+- TopRight
+- Right (RightMiddle)
+- BottomRight
+- Bottom (BottomCenter)
+- BottomLeft
+- Left (LeftMiddle) `[0, 0.5, -1, 0]` 
+- TopLeft
+- Center
+
+这些特殊的字符串实际上是底层基于数组语法的简写 `[x, y, dx, dy]` 。`x, y` 是以左上角为原点，横向 x 轴，竖向 y 轴，取值为 `[0, 1]` 。`dx, dy` 指定与锚点关联的曲线的方向值，取值为 `0,1,-1`。
+
+```js
+jsPlumb.connect({...., anchor:"Bottom", ... });
+// 等同于
+jsPlumb.connect({...., anchor:[ 0.5, 1, 0, 1 ], ... });
+```
+
+
+
+锚点偏移
+
+数组语法除了给定锚点的位置与方向外，还可以提供两个参数，用于定义距给定的位置以像素为单位的偏移量
+
+`jsPlumb.connect({...., anchor:[ 0.5, 1, 0, 1, 0, 50 ], ... })` Bottom 位置的锚点，向下偏移 50px
+
+#### 动态锚点 Dynamic Anchors
+
+提供一组锚点位置，当物体重绘或者物体移动时，会选择最合适的一个。
+
+可以使用数组语法、简写语法、混合语法。jsPlumb 提供了一个默认简写值 `AutoDefault` ，是 `Top/Right/Bottom/Left` 的集合
+
+```js
+var dynamicAnchors = [ [ 0.2, 0, 0, -1 ],  [ 1, 0.2, 1, 0 ], 
+               "Top", "Bottom" ];
+jsPlumb.connect({...., anchor:dynamicAnchors, ... });
+```
+
+#### 边缘锚点 Perimeter Anchors
+
+这些是在给定形状周边上的锚点。本质上，这是一些动态锚点，其位置是从基础形状的周边选择的。jsPlumb 支持六种形状。
+
+- `Circle` - 圆
+- `Ellipse` - 椭圆
+- `Triangle` - 三角形
+- `Diamond` - 菱形
+- `Rectangle` - 矩形
+- `Square` - 正方形
+
+```js
+jsPlumb.addEndpoint("someElement", {
+  endpoint:"Dot",
+  anchor:[ "Perimeter", { shape:"Circle" } ]
+});
+```
+
+#### 连续锚 Continuous Anchors 
+
+这些锚点不固定在特定的位置。其根据关联连接器上的另一个元素的方向，将他们分配到元素的某一面上。与静态锚点和动态锚点相比较，其计算量稍高，因为需要计算绘制周期中，每个连接的位置，而不仅仅是属于运动元素的连接。
+
+
+
 ### 1.3.2. Connectors [todo]
 连线类型：
-- Bezier 贝塞尔曲线
-- Straight 直线
-- Flowchart 90度转角线
-- State Machine 状态机 
+- `Bezier` 贝塞尔曲线
+- `Straight` 直线
+- `Flowchart` 90度转角线
+- `StateMachine` 状态机
+
+[官方文档：连线类型以及参数](https://docs.jsplumbtoolkit.com/toolkit/current/articles/connectors.html)
 
 ### 1.3.3. Endpoints [todo]
+
+[官网：Endpoints-api](https://github.com/jsplumb/jsplumb/blob/da6688b86fbfba621bf3685e4431a4d9be7213b4/doc/api/endpoint-api.js) 
+
+链接器的一端。端点有一个底层锚点，决定了端点的位置。每一个端点上可以有 `[0, maxConnections]` 的连接（默认是 1，如果设置 `maxConnections=-1` ，则不限制连接数）。
+
+你不需要直接创建端点，只需向适当的 JSPlumb 方法提供端点定义即可。
+
+1. `String` - 有效的端点名，如 Dot、Rectangle。
+2. `[String, Object]` 数组 - 有效的端点名，对应的参数
+
+
+
 端点类型:
-- Dot 圆点
-- Rectangle 矩形
-- Image 图像
-- Blank 空白
+- `Dot` 圆点
+  - `radius`  - 整数，默认 10px；可选；定义原点的半径。
+  - `cssClass`  - 字符串；可选；附加到端点上的 CSS 类
+  - `hoverClass` - 字符串；可选；鼠标悬停在端点上附加的类名
+- `Rectangle` 矩形
+  - `width` - 整数，默认 20；
+  - `height` - 整数，默认 20；
+  - `cssClass/hoverClass`
+- `Image` 图像
+  - `src` - 要显示的图片的地址
+  - `cssClass/hoverClass`
+- `Blank`  空白
+
+对于 `cssClass` 与 `hoverClass` 参数类型可以是单个类名、多个类名使用空格分开，如`dot-a dot-b`
+
+不能通过 CSS 样式来修改端点的大小，会造成端点在元素上的位置不准确。如等 Type 为 Image 是，插件会自动读取图片的大小
+
+
+
+#### Endpoint 参数、实例属性、方法
+
+可以利用 `addEndpoint()` 方法（返回新创建的端点）查看。
+
+实例参数
+
+| 参数              | 参数类型       | 是否必须 | 说明                                                         |
+| ----------------- | -------------- | -------- | ------------------------------------------------------------ |
+| params            | Object         | 是       | 构造函数的参数                                               |
+| {}.anchor         | String\|Array  | 否       | 定义端点的锚点                                               |
+| {}.isSource       | Boolean-false  | 否       | 指示端点可以作为新连接的源                                   |
+| {}.isTarget       | ..             | ..       |                                                              |
+| {}.connector      | String\|Object | 否       | 要使用的链接器的类型。已知连接器类型的单个字符串 `Bezier` 。或一个数组 `[name, params]` 如 `[ "Bezier", { curviness:160 } ]` |
+| {}.maxConnections | Integer 整数   | 否       | 默认 1                                                       |
+
+
 
 ### 1.3.4. Overlays [todo]
+
+[官网：Overlays ](https://jsplumb.github.io/jsplumb/overlays.html)
 
 Overlays可以理解为在连接线上的文字或者箭头之类的东东
 
 Overlays类型
-- Arrow
-- Label
-- PlainArrow
-- Diamond
-- Custom
+- Arrow - 箭头 可配置折线箭头
+- Label - 标签
+- PlainArrow - 平箭头（没有折叠）Arrow 的 foldback=1的特殊实例
+- Diamond - 钻石（菱形）Arrow 的 foldback=2的特殊实例
+- Custom - 可以是任意的 DOM 元素
+
+Overlasy Location 覆盖物的位置
+
+- `[0, 1]` 链接器上的比例值；0.5 代表连接器的重点
+- 大于 1 的整数，表示从起点沿连接器移动的绝对像素值
+- 小于 0 的整数，反向
+- 对于端点，适用同样的规则；但是是数组，是指位于端点中心的叠加层
 
 ```js
 // 连线上overlay可以多个，
@@ -191,7 +313,7 @@ jsPlumb.ready方法和jquery的ready方法差不多的功能，jsPlumb.connect�
 ![](./images/20180415224517_SK0PUc_Jietu20180415-224454.jpeg)
 
 
-```
+```html
 <div id="diagramContainer">
     <div id="item_left" class="item"></div>
     <div id="item_right" class="item" style="margin-left:50px;"></div>
@@ -211,6 +333,9 @@ jsPlumb.ready方法和jquery的ready方法差不多的功能，jsPlumb.connect�
 ```
 
 
+
+### jsPlumb.connect 参数
+
 参数说明：
 jsPlumb.connect(config) return connection
 
@@ -219,19 +344,20 @@ jsPlumb.connect(config) return connection
 source | String,Object,Endpoint | 是 | 连线源的标识，可以是id, element, 或者Endpoint
 target | String,Object,Endpoint | 是 | 连线目标的标识，可以是id, element, 或者Endpoint
 endpoint | String | 可选 | 端点类型，形状
+uuids | String[] | 可选 | 要连接的两个端点（Endpoints）可选的 UUIDS 数组. 如果提供这个参数，就不需要提供 `source` 或 `target`<br />可以使用 [node-uuid](https://github.com/uuidjs/uuid) 生成唯一 uid 
+type | String | 可选 | 可选的连接器（连线 Connection）的类型
 
 [>>> connect方法详情](https://github.com/jsplumb/jsplumb/blob/da6688b86fbfba621bf3685e4431a4d9be7213b4/doc/api/jsplumb-api.js#L76)
+
 
 
 ## 2.2. 可拖动节点
 
 demo: https://wdd.js.org/jsplumb-chinese-tutorial/demos/02.html
 
-使用draggable可以让节点被拖动，[draggable方法参考](https://github.com/jsplumb/jsplumb/blob/da6688b86fbfba621bf3685e4431a4d9be7213b4/doc/api/jsplumb-api.js#L690)
-
 ![](./images/20180227191655_GOJLi1_Jietu20180227-191647.jpeg)
 
-```
+```html
 <div id="diagramContainer">
     <div id="item_left" class="item"></div>
     <div id="item_right" class="item" style="left:150px;"></div>
@@ -255,6 +381,32 @@ demo: https://wdd.js.org/jsplumb-chinese-tutorial/demos/02.html
 
 
 
+### 元素设置可拖拽
+
+使用draggable可以让节点被拖动，[API: draggable方法参考](https://github.com/jsplumb/jsplumb/blob/da6688b86fbfba621bf3685e4431a4d9be7213b4/doc/api/jsplumb-api.js#L690)
+
+[官方 doc：Element Dragging](https://jsplumb.github.io/jsplumb/dragging.html)
+
+Allowed Argument Types - 允许的参数类型
+
+- 代表 Element ID 的字符串或其组成的类数组
+
+- Element 或 其组成的类数组
+
+  ```js
+  jsPlumbInstance.draggable(["elementOne", "elementTwo"])
+  jsPlumbInstance.draggable($(".someClass"));
+  jsPlumbInstance.draggable(document.querySelectorAll(".someClass"));
+  ```
+
+必须设置的 CSS
+
+必须要在拖拽的元素上设置 `position: absolute` 。因为实现拖拽是通过 left 和 top 属性来控制的。
+
+
+
+
+
 ## 2.3. 连接的其他参数
 
 demo: https://wdd.js.org/jsplumb-chinese-tutorial/demos/03.html
@@ -270,7 +422,7 @@ jsplumb连线的样式有四种
 
 ![](./images/20180227192135_1AWJH6_Jietu20180227-192120.jpeg)
 
-```
+```html
 <div id="diagramContainer">
     <div id="item_left" class="item"></div>
     <div id="item_right" class="item" style="left:150px;"></div>
@@ -284,7 +436,9 @@ jsplumb连线的样式有四种
         source: 'item_left',
         target: 'item_right',
         endpoint: 'Rectangle',
+        // ['连接器的类型', { 相应连接器类型的参数 }]
         connector: ['Bezier'],
+        // 锚点位于各自父元素的位置
         anchor: ['Left', 'Right']
       })
 
@@ -298,9 +452,9 @@ jsplumb连线的样式有四种
 
 demo: https://wdd.js.org/jsplumb-chinese-tutorial/demos/04.html 
 
-很多连线都是相同设置的情况下，可以将配置抽离出来，作为一个单独的变量，作为connect的第二个参数传入。实际上connect的第二个参数会和第一个参数merge，作为一个整体。
+在很多连线都是相同设置的情况下，可以将配置抽离出来，作为一个单独的变量，作为connect的第二个参数传入。实际上connect的第二个参数会和第一个参数merge，作为一个整体。
 
-```
+```html
 <script>
     /* global jsPlumb */
     jsPlumb.ready(function () {
@@ -329,7 +483,7 @@ demo: https://wdd.js.org/jsplumb-chinese-tutorial/demos/05.html
 
 ![](./images/20180227192811_AA9fXd_Jietu20180227-192758.jpeg)
 
-```
+```javascript
 jsPlumb.connect({
   source: 'item_left',
   target: 'item_right',
@@ -337,6 +491,10 @@ jsPlumb.connect({
   endpointStyle: { fill: 'lightgray', outlineStroke: 'darkgray', outlineWidth: 2 }
 }, common)
 ```
+
+[官网：paint-styles 绘制样式](https://jsplumb.github.io/jsplumb/paint-styles.html)
+
+
 
 ## 2.6. 给连接加上箭头
 
@@ -356,7 +514,7 @@ overlays有五种类型，下面给出简介。具体使用方法参见 http://j
 
 ![](./images/20180227193801_OejsPz_Jietu20180227-193752.jpeg)
 
-```
+```js
 jsPlumb.connect({
   source: 'item_left',
   target: 'item_right',
@@ -370,34 +528,48 @@ jsPlumb.connect({
 
 demo: https://wdd.js.org/jsplumb-chinese-tutorial/demos/07.html
 
-addEndpoint方法可以用来增加端点，[具体使用请看](https://github.com/jsplumb/jsplumb/blob/da6688b86fbfba621bf3685e4431a4d9be7213b4/doc/api/jsplumb-api.js#L57)
+addEndpoint方法可以用来增加端点，[官网：addEndpoint ](https://github.com/jsplumb/jsplumb/blob/da6688b86fbfba621bf3685e4431a4d9be7213b4/doc/api/jsplumb-api.js#L57)
+
+[官网：Endpoint 的具体参数](https://github.com/jsplumb/jsplumb/blob/da6688b86fbfba621bf3685e4431a4d9be7213b4/doc/api/endpoint-api.js#L57) 
 
 ![](./images/20180227193308_wYaELY_Jietu20180227-193254.jpeg)
 
-```
-    jsPlumb.ready(function () {
-      jsPlumb.addEndpoint('item_left', {
-        anchors: ['Right']
-      })
-    })
+```js
+/**
+ * 给给定的一个或多个元素添加端点
+ * @method addEndpoint
+ * @param {String|Object|Array} el - 要添加端点的元素。元素 ID、选择器、或者一个数组
+ * @param {Object} [param] - 含有端点构造函数参数的对象
+ * @param {object} [referenceParams] - 同上，使用与共享参数会与 param 合并
+ * @return {Object | Array} 返回新创建的端点或由端点组成的数组
+ */
+
+jsPlumb.ready(function () {
+  jsPlumb.addEndpoint('item_left', {
+    // TODO: 看 API 文档明明只有 anchor(Object|Array) 参数，会什么使用 anchors 也是可以的
+    anchors: ['Right']
+  })
+})
 ```
 
 ## 2.8. 拖动创建连接
 
 demo: https://wdd.js.org/jsplumb-chinese-tutorial/demos/08.html
 
-如果你将`isSource`和`isTarget`设置成true，那么久可以用户在拖动时，自动创建连接。
+[官网 API: setContainer](https://github.com/jsplumb/jsplumb/blob/da6688b86fbfba621bf3685e4431a4d9be7213b4/doc/api/jsplumb-api.js) 
+
+如果你将`isSource`和`isTarget`设置成true，那么就可以在用户拖动时，自动创建连接。
 
 ![](./images/20180227193546_yg6Z4L_Jietu20180227-193527.jpeg)
 
-```
+```js
 jsPlumb.ready(function () {
       jsPlumb.setContainer('diagramContainer')
 
       var common = {
-        isSource: true,
+        isSource: true, // 表示这个端点可以作为新连接的源；默认是 false
         isTarget: true,
-        connector: ['Straight']
+        connector: ['Straight'] // 查看 Endpoints 参数
       }
 
       jsPlumb.addEndpoint('item_left', {
@@ -417,14 +589,19 @@ jsPlumb.ready(function () {
 `一般来说拖动创建的连接，可以再次拖动，让连接断开。如果不想触发这种行为，可以设置。`
 
 ```js
-  jsPlumb.importDefaults({
-    ConnectionsDetachable: false
+/**
+ * 将给定的默认值导入此 jsPlumb 的示例中
+ * jsplumb/doc/api/jsplumb-api.js
+ * Configuring Defaults - https://jsplumb.github.io/jsplumb/defaults.html
+ */
+jsPlumb.importDefaults({
+    ConnectionsDetachable: false // 链接可分开（可拆卸）
   })
 ```
 
 `如果你需要在连接被拖动建立后，更新数据模型，则需要订阅connection事件`, 回调函数的info对象里，有你所需的任何数据。比如说从哪个节点拖动到哪个节点的。
 
-关于事件，可以参考事件章节。
+关于事件，可以参考 `3. jsPlumb 事件列表` 章节。
 
 ```js
 jsPlumb.bind("connection", function(info, originalEvent) {
@@ -437,6 +614,8 @@ jsPlumb.bind("connection", function(info, originalEvent) {
 demo: https://wdd.js.org/jsplumb-chinese-tutorial/demos/09.html
 
 通过设置各种 `*Style`来改变连接或者端点的样式。
+
+[官方 DOC：Paint Styles - 绘制样式](https://jsplumb.github.io/jsplumb/paint-styles.html)
 
 
 ![](./images/20180227194136_zIlkwP_Jietu20180227-194127.jpeg)
@@ -489,35 +668,78 @@ jsplumb实际上不支持改变节点大小，实际上只能通过jquery ui res
 
 ![](./images/20180227195351_B18Pal_Jietu20180227-195338.jpeg)
 
-```
+```html
 <div id="diagramContainer">
-    <div id="item_left" class="item"></div>
-    <div id="item_right" class="item" style="left:150px;"></div>
-  </div>
-  <script src="https://code.jquery.com/jquery-1.11.3.js"></script>
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-  <script src="./lib/jquery.jsplumb.js"></script>
+  <div id="item_left" class="item"></div>
+  <div id="item_right" class="item" style="left:150px;"></div>
+</div>
+<script src="https://code.jquery.com/jquery-1.11.3.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="./lib/jquery.jsplumb.js"></script>
 
-  <script>
-    /* global jsPlumb, $ */
-    $('.item').resizable({
-      resize: function (event, ui) {
-        jsPlumb.repaint(ui.helper)
-      }
-    })
+<script>
+  /* global jsPlumb, $ */
+  $(".item").resizable({
+    resize: function(event, ui) {
+      // 锚点位置不动
+      jsPlumb.repaint(ui.helper)
+      //
+      // jsPlumb.revalidate(ui.helper[0])
+      // jsPlumb.repaintEverything();
+    }
+  });
 
-    jsPlumb.ready(function () {
-      jsPlumb.connect({
-        source: 'item_left',
-        target: 'item_right',
-        endpoint: 'Rectangle'
-      })
+  jsPlumb.ready(function() {
+    jsPlumb.connect({
+      source: "item_left",
+      target: "item_right",
+      endpoint: "Rectangle"
+    });
 
-      jsPlumb.draggable('item_left')
-      jsPlumb.draggable('item_right')
-    })
-  </script>
+    jsPlumb.draggable("item_left");
+    jsPlumb.draggable("item_right");
+  });
+</script>
 ```
+
+
+
+### 重新绘制元素
+
+如果使用 `jsPlumb.draggable` 来初始化可拖动元素，通常情况下，不需要指示 jsPlumb 重新绘制。然而，在某些场景下是需要的：
+
+- 重新调整了元素的大小，需要重新计算其上的端点位置
+- 通过程序的方式移动了元素
+- 实际上没有通过 `jsPlumb.draggable` 方法初始化某个可拖动的元素
+
+[官方 API：repaint](https://github.com/jsplumb/jsplumb/blob/da6688b86fbfba621bf3685e4431a4d9be7213b4/doc/api/jsplumb-api.js#L611)
+
+```js
+/**
+ * 重新绘制元素及其链接
+ * @method repaint
+ * @param {String|Element|Selector} el The element in question.
+ * @return {jsPlumbInstance} The current jsPlumb instance.
+ */
+/**
+ * 清除元素的偏移量和尺寸缓存，然后重新绘制及其链接
+ * @method revalidate
+ * @param {Strong|Element|Selector} el - 有问题的元素
+ */
+/**
+ * 重新绘制所有的链接及端点
+ * @method repaintEverything
+ * @param {boolean} [clearEdits=false] - 如果是 true, 清除自上次绘制后所做的修改
+ * @return {jsPlumbInstance} The current jsPlumb instance.
+ * @see jsPlumbInstance#repaint
+ */
+```
+
+
+
+
+
+
 
 ## 2.11. 限制节点拖动区域
 
@@ -529,7 +751,7 @@ demo: https://wdd.js.org/jsplumb-chinese-tutorial/demos/11.html
 
 ![](./images/20180227195859_fFawMs_Jietu20180227-195844.jpeg)
 
-```
+```js
 jsPlumb.draggable('item_left', {containment: 'parent'})
 jsPlumb.draggable('item_right', {containment: 'parent'})
 jsPlumb.draggable('some-id', {containment: "#containment-wrapper"})
@@ -542,7 +764,8 @@ demo: https://wdd.js.org/jsplumb-chinese-tutorial/demos/12.html
 
 ![](./images/20180227200100_wEX1FU_Jietu20180227-200047.jpeg)
 
-```
+```html
+<style>
 #diagramContainer {
   padding: 20px;
   width: 80%;
@@ -551,11 +774,14 @@ demo: https://wdd.js.org/jsplumb-chinese-tutorial/demos/12.html
   background-image: url(./images/20180227163310_1bVYeW_grid.jpeg);
   background-repeat: repeat;
 }
+</style>
 
+<script>
 jsPlumb.draggable('item_left', {
   containment: 'parent',
-  grid: [10, 10]
+  grid: [10, 10] // 网格对其属性
 })
+</script>
 ```
 
 ## 2.13. 给连接添加点击事件：点击删除连线
@@ -564,11 +790,11 @@ demo: https://wdd.js.org/jsplumb-chinese-tutorial/demos/13.html
 
 ![](./images/20180713130405_UnzvUT_Jietu20180713-130335.jpeg)
 
-```
+```js
 // 请单点击一下连接线, 
 jsPlumb.bind('click', function (conn, originalEvent) {
   if (window.prompt('确定删除所点击的连接吗？ 输入1确定') === '1') {
-    jsPlumb.detach(conn)
+    jsPlumb.detach(conn) // 分离并清理给定的连接器
   }
 })
 ```
@@ -595,13 +821,15 @@ jsPlumb支持许多事件
 
 参考用法参考：https://github.com/jsplumb/jsplumb/blob/da6688b86f/doc/wiki/events.md
 
+
+
 ## 2.14. 删除节点，包括节点相关的连接
 
 demo: https://wdd.js.org/jsplumb-chinese-tutorial/demos/14.html
 
 ![](./images/20180713131254_dLSYLW_Jietu20180713-131238.jpeg)
 
-```
+```js
 // nodeId为节点id, remove方法可以删除节点以及和节点相关的连线
 console.log('3 秒后移除左边节点包括它的连线')
 setTimeout(function () {
@@ -609,7 +837,13 @@ setTimeout(function () {
 }, 3000)
 ```
 
-注意remove方法有些情况下是无法删除干净连线的，[详情](https://github.com/jsplumb/jsplumb/blob/da6688b86fbfba621bf3685e4431a4d9be7213b4/doc/api/jsplumb-api.js#L648)
+注意remove方法有些情况下是无法删除干净连线的，[官方 API：remove](https://github.com/jsplumb/jsplumb/blob/da6688b86fbfba621bf3685e4431a4d9be7213b4/doc/api/jsplumb-api.js#L648)
+
+> 从 DOM 中删除给定的元素，以及与之相关的所有端点，以及他们之间的链接，也会删除所有子元素的端点及链接以及子元素本身
+
+[官方 wiki：removing](https://jsplumb.github.io/jsplumb/removing.html)
+
+
 
 ## 2.15. 通过编码连接endPoint
 
@@ -617,9 +851,9 @@ demo: https://wdd.js.org/jsplumb-chinese-tutorial/demos/15.html
 
 ![](./images/20180713132452_xkiWxs_Jietu20180713-132430.jpeg)
 
-初始化数据后，给节点加上了endPoint, 如果想编码让endPoint连接上。需要在addEndpoint时，就给该断点加上一个uuid, 然后通过connect()方法，将两个断点连接上。建议使用[node-uuid](https://github.com/kelektiv/node-uuid)给每个断点都加上唯一的uuid， 这样以后连接就方便多了。
+初始化数据后，给节点加上了endPoint, 如果想编码让endPoint连接上。需要在addEndpoint时，就给该断点加上一个uuid, 然后通过connect()方法，将两个断点连接上。建议使用[node-uuid](https://github.com/kelektiv/node-uuid)给每个端点都加上唯一的uuid， 这样以后连接就方便多了。
 
-```
+```js
 jsPlumb.addEndpoint('item_left', {
   anchors: ['Right'],
   uuid: 'fromId'
@@ -636,6 +870,8 @@ setTimeout(function () {
 }, 3000)
 ```
 
+
+
 ## 2.16. 连接前的检查，判断是否建立连接
 
 demo: https://wdd.js.org/jsplumb-chinese-tutorial/demos/16.html
@@ -644,7 +880,7 @@ demo: https://wdd.js.org/jsplumb-chinese-tutorial/demos/16.html
 
 有时候当用户从A端点连接到B端点时，需要做一些检查，如果不符合条件，就不让连接建立。
 
-```
+```js
 // 当连接建立前
 jsPlumb.bind('beforeDrop', function (info) {
   var a = 10
@@ -663,13 +899,15 @@ jsPlumb.bind('beforeDrop', function (info) {
 
 demo https://wdd.js.org/jsplumb-chinese-tutorial/demos/17.html
 
+> 具体查看 1.3.3 Endpoint 具体参数
+
 默认情况下，`maxConnections`的值是1，也就是一个端点最多只能拉出一条连线。
 
 你也可以设置成其他值，例如5，表示最多可以有5条连线。
 
 如果你想不限制连线的数量，那么可以将该值设置为`-1`
 
-```
+```js
 var common = {
   isSource: true,
   isTarget: true,
@@ -681,6 +919,8 @@ jsPlumb.addEndpoint('item_left', {
   anchors: ['Right']
 }, common)
 ```
+
+
 
 ## 2.18. 整个节点作为source或者target
 
@@ -724,7 +964,7 @@ jsPlumb的锚点分为四类
 
 demo: https://wdd.js.org/jsplumb-chinese-tutorial/demos/19.html
 
-```
+```js
  window.jsPlumb.ready(function () {
       var jsPlumb = window.jsPlumb
       jsPlumb.setContainer("diagramContainer")
@@ -756,6 +996,8 @@ demo: https://wdd.js.org/jsplumb-chinese-tutorial/demos/19.html
       jsPlumb.setZoom(0.75);
     }
 ```
+
+
 
 ![](./images/20181023210318_r0MaTA_Jietu20181023-210309.jpeg)
 
