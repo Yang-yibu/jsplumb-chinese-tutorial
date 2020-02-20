@@ -1,3 +1,5 @@
+<details>
+<summary>目录 TOC</summary>
 <!-- TOC -->
 
 - [1. jsplumb 中文基础教程](#1-jsplumb-%e4%b8%ad%e6%96%87%e5%9f%ba%e7%a1%80%e6%95%99%e7%a8%8b)
@@ -6,14 +8,20 @@
   - [1.3. 基本概念](#13-%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5)
     - [1.3.1. Anchors [todo]](#131-anchors-todo)
       - [静态锚点 Static Anchors](#%e9%9d%99%e6%80%81%e9%94%9a%e7%82%b9-static-anchors)
+      - [动态锚点 Dynamic Anchors](#%e5%8a%a8%e6%80%81%e9%94%9a%e7%82%b9-dynamic-anchors)
+      - [边缘锚点 Perimeter Anchors](#%e8%be%b9%e7%bc%98%e9%94%9a%e7%82%b9-perimeter-anchors)
+      - [连续锚 Continuous Anchors](#%e8%bf%9e%e7%bb%ad%e9%94%9a-continuous-anchors)
     - [1.3.2. Connectors [todo]](#132-connectors-todo)
     - [1.3.3. Endpoints [todo]](#133-endpoints-todo)
+      - [Endpoint 实例参数、属性、方法](#endpoint-%e5%ae%9e%e4%be%8b%e5%8f%82%e6%95%b0%e5%b1%9e%e6%80%a7%e6%96%b9%e6%b3%95)
     - [1.3.4. Overlays [todo]](#134-overlays-todo)
     - [1.3.5. Groups [todo]](#135-groups-todo)
   - [1.4. 样式设置 [todo]](#14-%e6%a0%b7%e5%bc%8f%e8%ae%be%e7%bd%ae-todo)
 - [2. 基础demos](#2-%e5%9f%ba%e7%a1%80demos)
   - [2.1. 连接两个节点](#21-%e8%bf%9e%e6%8e%a5%e4%b8%a4%e4%b8%aa%e8%8a%82%e7%82%b9)
+    - [jsPlumb.connect 参数](#jsplumbconnect-%e5%8f%82%e6%95%b0)
   - [2.2. 可拖动节点](#22-%e5%8f%af%e6%8b%96%e5%8a%a8%e8%8a%82%e7%82%b9)
+    - [元素设置可拖拽](#%e5%85%83%e7%b4%a0%e8%ae%be%e7%bd%ae%e5%8f%af%e6%8b%96%e6%8b%bd)
   - [2.3. 连接的其他参数](#23-%e8%bf%9e%e6%8e%a5%e7%9a%84%e5%85%b6%e4%bb%96%e5%8f%82%e6%95%b0)
   - [2.4. 设置连接的默认值](#24-%e8%ae%be%e7%bd%ae%e8%bf%9e%e6%8e%a5%e7%9a%84%e9%bb%98%e8%ae%a4%e5%80%bc)
   - [2.5. 给连接加上样式](#25-%e7%bb%99%e8%bf%9e%e6%8e%a5%e5%8a%a0%e4%b8%8a%e6%a0%b7%e5%bc%8f)
@@ -22,6 +30,7 @@
   - [2.8. 拖动创建连接](#28-%e6%8b%96%e5%8a%a8%e5%88%9b%e5%bb%ba%e8%bf%9e%e6%8e%a5)
   - [2.9. 给端点增加样式](#29-%e7%bb%99%e7%ab%af%e7%82%b9%e5%a2%9e%e5%8a%a0%e6%a0%b7%e5%bc%8f)
   - [2.10. 节点改变尺寸](#210-%e8%8a%82%e7%82%b9%e6%94%b9%e5%8f%98%e5%b0%ba%e5%af%b8)
+    - [重新绘制元素](#%e9%87%8d%e6%96%b0%e7%bb%98%e5%88%b6%e5%85%83%e7%b4%a0)
   - [2.11. 限制节点拖动区域](#211-%e9%99%90%e5%88%b6%e8%8a%82%e7%82%b9%e6%8b%96%e5%8a%a8%e5%8c%ba%e5%9f%9f)
   - [2.12. 节点网格对齐](#212-%e8%8a%82%e7%82%b9%e7%bd%91%e6%a0%bc%e5%af%b9%e9%bd%90)
   - [2.13. 给连接添加点击事件：点击删除连线](#213-%e7%bb%99%e8%bf%9e%e6%8e%a5%e6%b7%bb%e5%8a%a0%e7%82%b9%e5%87%bb%e4%ba%8b%e4%bb%b6%e7%82%b9%e5%87%bb%e5%88%a0%e9%99%a4%e8%bf%9e%e7%ba%bf)
@@ -31,6 +40,7 @@
   - [2.17. 一个端点如何拖拽出多条连线](#217-%e4%b8%80%e4%b8%aa%e7%ab%af%e7%82%b9%e5%a6%82%e4%bd%95%e6%8b%96%e6%8b%bd%e5%87%ba%e5%a4%9a%e6%9d%a1%e8%bf%9e%e7%ba%bf)
   - [2.18. 整个节点作为source或者target](#218-%e6%95%b4%e4%b8%aa%e8%8a%82%e7%82%b9%e4%bd%9c%e4%b8%basource%e6%88%96%e8%80%85target)
   - [2.19. 节点缩放](#219-%e8%8a%82%e7%82%b9%e7%bc%a9%e6%94%be)
+    - [Zooming 缩放](#zooming-%e7%bc%a9%e6%94%be)
 - [3. jsPlumb事件列表](#3-jsplumb%e4%ba%8b%e4%bb%b6%e5%88%97%e8%a1%a8)
   - [3.1. 常用事件](#31-%e5%b8%b8%e7%94%a8%e4%ba%8b%e4%bb%b6)
     - [3.1.1. connection 连接建立时触发](#311-connection-%e8%bf%9e%e6%8e%a5%e5%bb%ba%e7%ab%8b%e6%97%b6%e8%a7%a6%e5%8f%91)
@@ -51,6 +61,12 @@
     - [3.2.1. Connection Events](#321-connection-events)
     - [3.2.2. Endpoint Events](#322-endpoint-events)
     - [3.2.3. Overlay Events](#323-overlay-events)
+    - [3.2.4. Unbinding Events](#324-unbinding-events)
+  - [3.3. 拦截器 - Interceptors](#33-%e6%8b%a6%e6%88%aa%e5%99%a8---interceptors)
+    - [beforeDrop 连接建立前](#beforedrop-%e8%bf%9e%e6%8e%a5%e5%bb%ba%e7%ab%8b%e5%89%8d)
+    - [beforeDetach 连接断开前](#beforedetach-%e8%bf%9e%e6%8e%a5%e6%96%ad%e5%bc%80%e5%89%8d)
+    - [beforeDrag 连接拖拽前](#beforedrag-%e8%bf%9e%e6%8e%a5%e6%8b%96%e6%8b%bd%e5%89%8d)
+    - [beforeStartDetach 连接开始断开](#beforestartdetach-%e8%bf%9e%e6%8e%a5%e5%bc%80%e5%a7%8b%e6%96%ad%e5%bc%80)
 - [4. jsPlumb默认配置简介](#4-jsplumb%e9%bb%98%e8%ae%a4%e9%85%8d%e7%bd%ae%e7%ae%80%e4%bb%8b)
 - [5. 工具函数](#5-%e5%b7%a5%e5%85%b7%e5%87%bd%e6%95%b0)
   - [5.1. 重绘某个元素 jsPlumb.revalidate](#51-%e9%87%8d%e7%bb%98%e6%9f%90%e4%b8%aa%e5%85%83%e7%b4%a0-jsplumbrevalidate)
@@ -79,6 +95,7 @@
 - [11. 参考资源](#11-%e5%8f%82%e8%80%83%e8%b5%84%e6%ba%90)
 
 <!-- /TOC -->
+</details>
 
 # 1. jsplumb 中文基础教程
 
@@ -225,7 +242,7 @@ jsPlumb.addEndpoint("someElement", {
 
 
 
-#### Endpoint 参数、实例属性、方法
+#### Endpoint 实例参数、属性、方法
 
 可以利用 `addEndpoint()` 方法（返回新创建的端点）查看。
 
@@ -1001,11 +1018,90 @@ demo: https://wdd.js.org/jsplumb-chinese-tutorial/demos/19.html
 
 ![](./images/20181023210318_r0MaTA_Jietu20181023-210309.jpeg)
 
+### Zooming 缩放
+
+[官方 doc：zooming](https://jsplumb.github.io/jsplumb/zooming.html)
+
+TODO: 如果 setZoom 与 CSS 的 scale 属性设置的级别不一致会怎样
+
+从 1.50 版开始，对于支持 CSS3 的浏览器（>=IE9），可以实现流程图的放大缩小功能。
+
+要实现此功能需要：
+
+- 设置 `transform` 属性给适合的容器
+- 告诉 jsPlumb 缩放级别
+
+```js
+// 设置容器
+jsPlumb.setContainer('#drawing')
+
+// 设置 CSS 属性；假设缩放级别是 0.75
+$("#drawing").css({
+  "-webkit-transform":"scale(0.75)",
+  "-moz-transform":"scale(0.75)",
+  "-ms-transform":"scale(0.75)",
+  "-o-transform":"scale(0.75)",
+  "transform":"scale(0.75)"
+});
+jsPlumb.setZoom(0.75);
+```
+
+
+
+一个帮助函数
+
+```js
+/**
+ * @param zoom - 缩放级别；取值小数，1 代表 100%
+ * @param [instance = jsPlumb] - 可以是 jsPlumb 实例、静态实例、或者通过jsPlumb.newInstance 获取的某个实例
+ * @param [transformOrigin=[0.5, 0.5]] - 默认 0.5，为元素的中心点；也是浏览器的默认值
+ * @param [el] - 默认从 jsPlumb 读取容器
+ */
+window.setZoom = function(zoom, instance, transformOrigin, el) {
+  transformOrigin = transformOrigin || [ 0.5, 0.5 ];
+  instance = instance || jsPlumb;
+  el = el || instance.getContainer();
+  var p = [ "webkit", "moz", "ms", "o" ],
+      s = "scale(" + zoom + ")",
+      oString = (transformOrigin[0] * 100) + "% " + (transformOrigin[1] * 100) + "%";
+
+  for (var i = 0; i < p.length; i++) {
+    el.style[p[i] + "Transform"] = s;
+    el.style[p[i] + "TransformOrigin"] = oString;
+  }
+
+  el.style["transform"] = s;
+  el.style["transformOrigin"] = oString;
+
+  instance.setZoom(zoom);    
+};
+```
+
+
+
 # 3. jsPlumb事件列表
+
+jsPlumb 支持在连接器（Connections）、端点（Endpoints）和覆盖层（Overlays）以及 jsPlumb 对象本身上绑定几个不同的事件。
+
+[官网 docs：events](https://jsplumb.github.io/jsplumb/events.html)
+
+```js
+// doc/api/util-api.js
+/**
+ * 将侦听器绑定到一个或多个时间上
+ * @method bind
+ * @param {String|String[]} event - 要绑定的事件名
+ * @param {Function} listener - 执行函数
+ * @param {Boolean} [insertAtStart=false] 是否将次侦听器插入到侦听器列表的开头，以便在其他当前注册的侦听器前被激发 TODO: 什么意思
+ */
+```
+
+
 
 ## 3.1. 常用事件
 
-具体事件中回调函数中参数的字段含义，参见
+
+
 绑定事件的方式, 以connection事件为例子
 
 ```js
@@ -1017,60 +1113,204 @@ jsPlumb.bind("connection", function(info) {
 
 ### 3.1.1. connection 连接建立时触发
 
-`connection(info, originalEvent)`
+`jsPlumb#connection(info, originalEvent)`
 
-- info.connection
-- info.sourceId
-- info.targetId
-- info.source
-- info.target
-- info.sourceEndpoint
-- info.targetEndpoint
-- originalEvent: 原始事件。只有用户拖动创建的连接，originalEvent才存在。
+- `info.connection` - 新的连接器。可以给它注册监听器等
+- `info.sourceId`
+- `info.targetId`
+- `info.source`
+- `info.target`
+- `info.sourceEndpoint`
+- `info.targetEndpoint`
+- `originalEvent` : 原始事件。只有用户拖动创建的连接，originalEvent才存在。
 
-**注意事项**：通过编码连接节点，也会触发connection事件，如果只想处理用户拖动创建建立的连接，可以判断第二个参数originalEvent是否存在。
+**注意事项**：通过编码连接节点，也会触发`connection`事件，如果只想处理用户拖动创建建立的连接，可以通过第二个参数`originalEvent`是否存在来判断。
+
+实际上，`source/target`可以在 `connection` 对象上获取到。但是由于历史问题 `connectionDetached` 的不稳定性，所以单独提供。
 
 ### 3.1.2. connectionDetached 连接断开时触发
 
 `connectionDetached(info, originalEvent)`
 
-- info.connection
-- info.sourceId
-- info.targetId
-- info.source
-- info.target
-- info.sourceEndpoint
-- info.targetEndpoint
-- originalEvent
+- `info.connection` - 被断开的连接器
+- `info.sourceId` - 连接器被分离前的起始元素 ID
+- `info.targetId`
+- `info.source`
+- `info.target`
+- `info.sourceEndpoint`
+- `info.targetEndpoint`
+- `originalEvent`
 
-**注意事项**：当拖动一个连线出现后，却没有连接到目标端点就放弃时，不会触发connectionDetached事件，会触发connectionAborted事件
+**注意事项**：当拖动一个连线出现，在没有连接到目标端点就放弃时，不会触发 `connectionDetached` 事件，会触发 `connectionAborted` 事件。
+
+> TODO: 关于单独提供 source / target 的解释中，说这个事件在连接分离和放弃时、或者从某个端点分离并附加到另一个端点时，都会触发。但实际测试只有从某个端点分离时才会被触发
+
+
 
 ### 3.1.3. connectionMoved 连接移动事件 
-`connectionMoved(info, originalEvent)`
+
+将现有链接的 `source` 或 `target` 端点拖动到摸一个新位置（从一个锚点到另一个锚点）时，触发。
+
+```js
+  /**
+   * 现有链接上的 `source` 或 `target` 端点移动到新位置（新的锚点上）
+   * @param {Object} info
+   * @param info.index - 0：source 端点；1 target 端点
+   * @param info.originSourceId - 移动前连接源元素的 ID
+   * @param info.newSourceId - 移动后连接元元素的 ID
+   * @param info.originalTargetId
+   * @param info.newTargetId
+   * @param info.originalSourceEndpoint
+   * @param info.newSourceEndpoint
+   * @param info.originalTargetEndpoint
+   * @parma info.newTargetEndpoint
+   * @param originEvent
+   */
+  function connectionMoved(info, originEvent) {}
+```
+
+
+
 ### 3.1.4. connectionAborted 连接取消事件 
-`connectionAborted(connection, originalEvent)`
+
+```js
+/**
+ * 当新连接拖拽后，但在连接到端点或者目标元素之前放弃链接时触发
+ *
+ * 测试：
+ * - 拖拽建立新连接并放弃
+ * - 某些原因连接不成功导致放弃
+ */
+function connectionAborted(connection, originalEvent) {}
+```
+
+
+
 ### 3.1.5. click 连接点击事件 
-`click(connection, originalEvent)`
+```js
+/**
+ * 连接器被点击
+ */
+function click(connection, originEvent) {}
+```
+
 ### 3.1.6. dblclick 连接双击事件 
-`dblclick(connection, originalEvent)`
+```js
+/**
+ * 双击连接器
+ */
+function dbclick(connection, originEvent) {}
+```
+
 ### 3.1.7. connectionDrag 连接拖动事件 
-`connectionDrag(connection)`
+```js
+/**
+ * 通知现有元素被拖拽（拖拽一个新的连接；移除现有连接）。注意，当这个事件是一个新连接触发时，
+ * 连接器（Connection）的目标是一个临时元素，在之后建立或终止时，会将其从 DOM 中删除。
+ * (开始拖动连接端点)
+ * 测试：
+ */
+function connectionDrag(connection) {}
+```
+
+
+
 ### 3.1.8. connectionDragStop 连接停止拖动事件 
-`connectionDragStop(connection)`
+
+```js
+/**
+ * 连接停止拖拽。 仅针对现有连接触发。(放弃拖动连接端点)
+ * 
+ * 测试：
+ *  - 拖拽建立新连接后，放弃连接或者成功连接
+ *  - 已建立的链接，拖拽使得链接分离，但凡放弃拖拽都会触发
+ */
+function connectionDragStop(connection) {}
+```
+
 ### 3.1.9. endpointClick 端点单击事件 
-`endpointClick(endpoint, originalEvent)`
+
+```js
+/**
+ * 单击端点
+ */
+function endpointClick(endpoint, originalEvent){}
+```
+
 ### 3.1.10. endpointDblClick 端点双击事件 
-`endpointDblClick(endpoint, originalEvent)`
+```js
+/*
+ * 端点被双击
+ */
+function endpointDblClick(endpoint, originalEvent){}
+```
+
 ### 3.1.11. contextmenu 鼠标右键事件 
-`contextmenu(component, originalEvent)`
-### 3.1.12. beforeDrop 连接建立前事件 
-`beforeDrop(info)` 注意如果这个回调函数返回false, 那么连接将不会被建立，可以用来连接建立的拦截
+
+```js
+/**
+ * 右键单击某个给定的组件。jsPlumb 将报告连接器和端点上的右键点击。
+ * 
+ * 测试：
+ *  - 连接器、端点、覆盖物上都可以触发此事件
+ *  - 其他元素未测试
+ *  - 同时会触发原生的右键事件，显示浏览器的右键菜单
+ */
+function contextmenu(component, originalEvent){}
+```
+
+<a id="jump-beforeDrop"></a>
+### 3.1.12. beforeDrop 连接建立前事件
+
+```js
+/*
+ * 原教程解释：链接建立前
+ *
+ * 官方 API 解释：
+ *  This event is fired when a new or existing connection has been dropped.
+ *  当新的或者已存在的链接被删除时被触发
+ * 
+ * TODO: 官方解释与此解释感觉有点出入，需再斟酌
+ * 结合原教程解释与官方解释， dropped 应该是落下、落在的意思
+ * 也就是：一个新的连接器或者现有连接器连接建立时触发
+ *    - 现有连接器连接到其他端点上
+ * 
+ * @param {Object} info
+ * @param info.sourceId
+ * @param info.targetId
+ * @param info.scope
+ * @param info.connection
+ * @param info.dropEndpoint
+ * @return {boolean|undefined} 
+ */
+function beforeDrop(info) {}
+```
+注意如果这个回调函数返回 false （或者什么也不返回）, 那么连接将不会被建立，可以用来连接建立的拦截
+
+<a id="jump-beforeDetach"></a>
 ### 3.1.13. beforeDetach 连接断开前事件 
-`beforeDetach(connection)`
+
+```js
+/**
+ * 连接断开前
+ * 
+ * 官方 DOC：无论什么原因，连接即将被分离时，将触发此事件。
+ *  - 如果返回 false(或什么也不返回) 将终止连接分离（可以拖动，但是分离不成功）
+ * 
+ * @param connection - 刚分离的连接器
+ */
+function beforeDetach(connection) {}
+```
 ### 3.1.14. zoom 缩放事件 
-`zoom(value)`
+```js
+/**
+ * 监听缩放事件
+ */
+function zoom(value) { }
+```
 
 ## 3.2. 其他事件
+
 ### 3.2.1. Connection Events
 
 在获得一个连接后，可以单独给某个连接绑定事件
@@ -1084,13 +1324,13 @@ connection.bind("click", function(conn) {
 
 当获取到连接后，连接还可以绑定其他事件
 
-- click(connection, originalEvent) - notification a Connection was clicked.
-- dblclick(connection, originalEvent) - notification a Connection was double-clicked.
-- contextmenu(connection, originalEvent) - a right-click on the Connection.
-- mouseover(connection, originalEvent) - notification the mouse is over the Connection's path.
-- mouseout(connection, originalEvent) - notification the mouse has exited the Connection's path.
-- mousedown(connection, originalEvent) - notification the mouse button was pressed on the Connection's path.
-- mouseup(connection, originalEvent) - notification the mouse button was released on the Connection's path.
+- `click(connection, originalEvent)` - notification a Connection was clicked.
+- `dblclick(connection, originalEvent)` - notification a Connection was double-clicked.
+- `contextmenu(connection, originalEvent)` - a right-click on the Connection.
+- `mouseover(connection, originalEvent)`- notification the mouse is over the Connection's path.
+- `mouseout(connection, originalEvent)` - notification the mouse has exited the Connection's path.
+- `mousedown(connection, originalEvent)` - notification the mouse button was pressed on the Connection's path.
+- `mouseup(connection, originalEvent)` - notification the mouse button was released on the Connection's path.
 
 ### 3.2.2. Endpoint Events
 
@@ -1101,23 +1341,38 @@ endpoint.bind("click", function(endpoint) {
 });
 ```
 
-- click(endpoint, originalEvent) - notification an Endpoint was clicked.
-- dblclick(endpoint, originalEvent) - notification an Endpoint was double-clicked.
-- contextmenu(endpoint, originalEvent) - a right-click on the Endpoint.
-- mouseover(endpoint, originalEvent) - notification the mouse is over the Endpoint.
-- mouseout(endpoint, originalEvent) - notification the mouse has exited the Endpoint.
-- mousedown(endpoint, originalEvent) - notification the mouse button was pressed on the Endpoint.
-- mouseup(endpoint, originalEvent) - notification the mouse button was released on the Endpoint.
-- maxConnections(info, originalEvent) - notification the user tried to drop a Connection on an Endpoint that already has the maximum number of Connections. info is an object literal containing these values:
+- `click(endpoint, originalEvent)` - notification an Endpoint was clicked.
+- `dblclick(endpoint, originalEvent)` - notification an Endpoint was double-clicked.
+- `contextmenu(endpoint, originalEvent)` - a right-click on the Endpoint.
+- `mouseover(endpoint, originalEvent)` - notification the mouse is over the Endpoint.
+- `mouseout(endpoint, originalEvent)` - notification the mouse has exited the Endpoint.
+- `mousedown(endpoint, originalEvent)` - notification the mouse button was pressed on the Endpoint.
+- `mouseup(endpoint, originalEvent)` - notification the mouse button was released on the Endpoint.
+- `maxConnections(info, originalEvent)` - notification the user tried to drop a Connection on an Endpoint that already has the maximum number of Connections. info is an object literal containing these values:
   - info.endpoint : Endpoint on which the Connection was dropped
   - info.connection : The Connection the user tried to drop
   - info.maxConnections : The value of maxConnections for the Endpoint
 
+```js
+/**
+ * 用户尝试在已经具有最大连接数的端点上建立连接（TODO: 这里的 drop 应该是 将一个连接器落在端点上）
+ * 
+ * @param {Object} info
+ * @param info.endpoint - 用户将要建立连接的目标端点
+ * @param info.connection - 用户尝试建立的连接器
+ * @param info.maxConnections - 连接器要建立的目标端点的最大连接数
+ * @param originEvent
+ */
+function maxConnections() {}
+
+endpoint.bind('maxConnection', function (info, originEvent) { })
+```
+
 ### 3.2.3. Overlay Events
 
-可以把Overlay理解为连线上的文字或者图标，可以给这些overlays单独绑定事件。
+可以把 Overlay 理解为连线上的文字或者图标，可以给这些 overlays 单独绑定事件。
 
-```
+```js
 jsPlumb.connect({
     source:"el1",
     target:"el2",
@@ -1138,6 +1393,124 @@ jsPlumb.connect({
       }]    
     ]
   });
+```
+
+### 3.2.4. Unbinding Events
+
+在 jsPlumb 本身、连接器、端点上，可以使用 `unbind` 方法删除侦听器。
+
+可以通过事件名取消绑定
+```js
+jsPlumb.unbind('click')
+```
+
+没有参数，表示取消绑定的所有事件
+```js
+var e = jsPlumb.addEndpoint('someDiv');
+e.bind('click', function () {});
+e.bind('dbclick', function () {});
+
+...
+e.unbind()
+```
+
+```js
+// doc/api/util-api.js
+/**
+ * Clears either all listeners, or listeners for some specific event, or just some listener. 
+ * 清除所有的侦听器，或者某个特定事件的侦听器，或者仅清除某个侦听器。
+ * You can call this method with zero, one or two arguments: 
+ * 可以用0、1、2个参数调用这个方法：
+ * with zero arguments, all listeners are cleared.
+ * 0 - 所有的侦听器被清除
+ * With one argument that is a string, all listeners for the specified event type are cleared. 
+ * 1 - 一个字符串参数，清除指定事件类型的所有侦听器
+ * With one argument that is a function, it is removed from the appropriate event list.
+ * 1 - 一个函数类型的参数，从相应的事件列表中移除
+ * With two arguments, the first is an event type, and the second is a function to be unbound.
+ * 2 - 两个参数，第一个是事件类型，第二个参数是要解绑的函数
+ * In fact this is perhaps unnecessary given that you can unbind a function just by passing it.
+ * 事实上，这可能是不必要的，因为可以通过传递函数来接触绑定
+ * @method unbind
+ * @param {String|Function} [eventOrListener] If a string, constrains the clear to just listeners for the event identified by the string. If a Function, unbinds this function wherever it may have been bound.
+ * @param {Function} [listener] If provided, removes just this listener for the given event.
+ */
+```
+
+## 3.3. [拦截器 - Interceptors](https://jsplumb.github.io/jsplumb/interceptors.html)
+
+拦截器基本上是事件处理程序，可以返回一个值告诉 jsPlumb 终止正在执行的操作。支持四种拦截器
+- `beforeDrop` : which is called when the user has dropped a Connection onto some target
+  - 当用户将 Connection（连接器）放到某个目标上时调用
+  - 原教程翻译：连接建立前
+- `beforeDetach` : which is called when the user is attempting to datach a Connection (by dragging it off one of its Endpoints and dropping in whitespace)
+  - 当用户尝试分离连接器时（通过将其脱离其某个端点并放入空白区域）调用
+  - TODO: 经测试，将某个端点脱离到另一个端点上也会调用
+  - 原教程翻译：连接断开前
+- `beforeDrag` : which is called when the user begins to drag a Connection
+  - 当用户开始拖拽连接前
+- `beforeStartDetach` : which is called when the user has just begun to drag an existing Connection off of one its Endpoints(compare with `beforeDetach`, in which the user is allowed to drag the Connection)
+  - 用户刚开始将现有连接从其某个端点拖出时触发（与 `beforeDetach` 相比，`beforeDetach` 允许用户将连接脱离）
+
+
+### beforeDrop 连接建立前
+
+[详细查看 3.1.12](#jump-beforeDrop)
+
+### beforeDetach 连接断开前
+
+[详细查看 3.1.13](#jump-beforeDetach)
+
+### beforeDrag 连接拖拽前
+
+
+```js
+/**
+ * 用户开始拖出新的连接时调用
+ * 
+ * 与其他拦截器略有不同：
+ *  - 返回 `false`(明确的返回 false)，将取消当前操作（不能拖出新连接）
+ *  - 返回对象，该对象将作为 `data` 参数传入新连接的构造函数
+ * 
+ * @param {Object} info
+ * @param info.endpoint - 用户从哪一个端点上拖拽新连接
+ * @param info.source - 端点所属的 DOM 元素
+ * @param info.sourceId - 端点所属的 DOM 元素的 ID
+ */
+function beforeDrag(info) {}
+```
+
+关于 `data` , 可以查看 [官网 Doc: parameterized connection types](https://jsplumb.github.io/jsplumb/types.html#parameterized-connection-type)
+
+
+<details>
+<summary>示例代码</summary>
+
+```js
+jsPlumb.bind("beforeDrag", function (...reset) {
+  console.log("beforeDrag: ", reset);
+  return {
+    foo: 'bar'
+  }
+});
+```
+</details>
+
+![](./assets/2020-02-20-14-01-37.png)
+
+### beforeStartDetach 连接开始断开
+
+```js
+/**
+ * 用户开始拖动现有链接时触发
+ * 
+ * 官方：Returning false from beforeStartDetach prevents the Connection from being dragged.
+ *    - 返回 false：可以防止连接被拖动
+ * 
+ * @param {Object} info
+ * @param 
+ */
+function beforeStartDetach(info) {}
 ```
 
 

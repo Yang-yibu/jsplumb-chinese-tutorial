@@ -1,66 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Document</title>
-  <style>
-    #diagramContainer {
-      padding: 20px;
-      width: 80%;
-      height: 200px;
-      border: 1px solid gray;
-    }
-
-    .item {
-      height: 80px;
-      width: 80px;
-      border: 1px solid blue;
-      float: left;
-    }
-  </style>
-</head>
-
-<body>
-  <div id="diagramContainer">
-    <div id="item_left" class="item"></div>
-    <div id="item_right" class="item" style="margin-left:50px;"></div>
-  </div>
-      <script src="https://cdn.jsdelivr.net/npm/jsplumb@2.8.0/dist/js/jsplumb.min.js"></script>
-      <!-- <script src="https://cdn.jsdelivr.net/npm/jsplumb@2.12.0/dist/js/jsplumb.js"></script> -->
-    <!-- <script src="https://cdn.bootcss.com/jsPlumb/2.12.0/js/jsplumb.min.js"></script> -->
-
-  <script>
-    /* global jsPlumb */
-    jsPlumb.ready(function () {
-      jsPlumb.setContainer('diagramContainer')
-
-      var common = {
-        isSource: true,
-        isTarget: true,
-        connector: ['Straight']
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style>
+      #diagramContainer {
+        padding: 20px;
+        width: 80%;
+        height: 400px;
+        border: 1px solid gray;
       }
 
-      var a = jsPlumb.addEndpoint('item_left', {
-        anchor: ['Right']
-      }, common)
-      console.log(a);
+      .item {
+        position: absolute;
+        height: 80px;
+        width: 80px;
+        border: 1px solid blue;
+        float: left;
+      }
+    </style>
+  </head>
 
-      jsPlumb.addEndpoint('item_right', {
-        anchor: 'Left'
-      }, common)
+  <body>
+    <div id="diagramContainer">
+      <div id="item_left" class="item"></div>
+      <div id="item_right" class="item" style="left:250px; top: 50px"></div>
+      <div id="item_right1" class="item" style="left:250px; top: 200px"></div>
+    </div>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/jsplumb@2.8.0/dist/js/jsplumb.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/jsplumb@2.12.0/dist/js/jsplumb.js"></script>
+    <!-- <script src="https://cdn.bootcss.com/jsPlumb/2.12.0/js/jsplumb.min.js"></script> -->
 
-      jsPlumb.addEndpoint('item_right', {
-        anchor: 'Right'
-      }, common)
+    <script>
+      /* global jsPlumb */
+      jsPlumb.ready(function() {
+        jsPlumb.setContainer("diagramContainer");
 
-      jsPlumb.bind('connection', function (info, originEvent) {
-        // debugger
-      })
-    })
-  </script>
-</body>
+        var common = {
+          isSource: true,
+          isTarget: true,
+          connector: ["Straight"]
+        };
 
+        var a = jsPlumb.addEndpoint(
+          "item_left",
+          {
+            anchor: ["Right"],
+            maxConnections: 1,
+            events: {
+              beforeDrop: function (...reset){
+                console.log('endpoint-beforeDrop: ', reset);
+              }
+            }
+          },
+          common
+        );
+        console.log(a);
+        a.bind('maxConnections', function (info, originEvent) {
+          console.log(info);
+        }, true)
+
+        jsPlumb.addEndpoint(
+          ["item_right", "item_right1"],
+          {
+            anchor: "Left"
+          },
+          common
+        );
+
+        jsPlumb.addEndpoint(
+          ["item_right"],
+          {
+            anchor: "Right"
+          },
+          common
+        );
+        jsPlumb.addEndpoint(
+          ["item_right", "item_right1"],
+          {
+            anchor: "Top"
+          },
+          common
+        );
+
+        jsPlumb.connect({
+          source: "item_left",
+          target: "item_right",
+          paintStyle: { stroke: "lightgray", strokeWidth: 1 },
+          endpointStyle: {
+            fill: "lightgray",
+            outlineStroke: "darkgray",
+            outlineWidth: 2
+          },
+          overlays: [["Arrow", { width: 40, length: 40  , location: 0.5 }]]
+        });
+        jsPlumb.draggable("item_left");
+
+        var handle = function handle(info, originEvent) {  }
+        jsPlumb.bind(["connection", 'click'], (...reset) => {
+          console.log('connection, click: ', reset);
+        });
+        jsPlumb.bind("connectionDetached", handle);
+        jsPlumb.bind("beforeDrop", function (...reset) {
+          console.log("beforeDrop: ", reset);
+          return true
+        });
+        jsPlumb.bind("beforeDrag", function (...reset) {
+          console.log("beforeDrag: ", reset);
+          return {
+            foo: 'bar'
+          }
+        });
+        jsPlumb.bind("beforeDetach", function (...reset) {
+          console.log('beforeDetach: ', reset);
+          // return false
+        });
+        jsPlumb.bind('beforeStartDetach', function (...reset) {
+          console.log('beforeStartDetach: ', reset);
+          // return false
+        })
+
+        jsPlumb.bind("connectionAborted", function(conn, originEvent) {
+          console.log("connectionAborted:", conn);
+        });
+        console.log(handle);
+
+      });
+    </script>
+  </body>
 </html>
+<script>
+
+</script>
