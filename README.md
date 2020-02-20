@@ -15,6 +15,10 @@
     - [1.3.3. Endpoints [todo]](#133-endpoints-todo)
       - [Endpoint 实例参数、属性、方法](#endpoint-%e5%ae%9e%e4%be%8b%e5%8f%82%e6%95%b0%e5%b1%9e%e6%80%a7%e6%96%b9%e6%b3%95)
     - [1.3.4. Overlays [todo]](#134-overlays-todo)
+      - [Overlays 类型](#overlays-%e7%b1%bb%e5%9e%8b)
+      - [Overlasy Location 覆盖物的位置](#overlasy-location-%e8%a6%86%e7%9b%96%e7%89%a9%e7%9a%84%e4%bd%8d%e7%bd%ae)
+      - [Add Overlays](#add-overlays)
+      - [其他方法](#%e5%85%b6%e4%bb%96%e6%96%b9%e6%b3%95)
     - [1.3.5. Groups [todo]](#135-groups-todo)
   - [1.4. 样式设置 [todo]](#14-%e6%a0%b7%e5%bc%8f%e8%ae%be%e7%bd%ae-todo)
 - [2. 基础demos](#2-%e5%9f%ba%e7%a1%80demos)
@@ -205,12 +209,65 @@ jsPlumb.addEndpoint("someElement", {
 
 ### 1.3.2. Connectors [todo]
 连线类型：
-- `Bezier` 贝塞尔曲线
-- `Straight` 直线
-- `Flowchart` 90度转角线
-- `StateMachine` 状态机
+- `Bezier`: 贝塞尔曲线
+  - `curviness`(弯曲度) 默认为 150，定义了 Bezier 的控制点到锚点的距离
+- `Straight`: 直线
+  - `stub` 默认为 0；短线（线头），从端点发出，垂直与当前端点所在面
+  - `gap` 默认为 0
+- `Flowchart` 90度转角线，垂直或水平线组成典型的流程图外观。支持回环连接，即在同一元素上开始和结束连接
+  - `stub` - 默认 30 ；整数 - 指定每一段的 stub 长度；数组 - [sourceStub, targetStub]
+  - `alwaysRespectStubs` - 默认 false；总是尊重短线，即 true，当元素间距小于两个短线之和时，stub 依旧不减少；反之则减少
+  - `gap` - 默认 0
+  - `midpoint` - 默认 0.5；
+  - `cornerRadius` - 默认 0；流程图的直角变成弧度
+- `StateMachine` 状态机；绘制稍微弯曲的线（二次贝塞尔曲线）。支持回环连接，这种情况下是一个圆。
+  - `margin` - 边距 默认 5
+  - `curviness` - 弯曲度默认 10
+  - `proximityLimit` - 接近度限制 默认 80
 
 [官方文档：连线类型以及参数](https://docs.jsplumbtoolkit.com/toolkit/current/articles/connectors.html)
+[官方 DOC: Connectors](https://jsplumb.github.io/jsplumb/connectors.html)
+
+<details>
+<summary>Straight 示例</summary>
+
+```js
+// Straight 示例
+jsPlumb.connect({
+  source: "item_left",
+  target: "item_right",
+  connector: ['Straight', {stub: 10, gap: 20}],
+  anchor: ["Right", "Left"]
+});
+jsPlumb.draggable("item_right");
+```
+
+![](./assets/2020-02-20-20-44-58.png)
+</details>
+
+
+<details>
+<summary>Flowchart 示例</summary>
+
+```js
+jsPlumb.connect({
+  source: "item_left",
+  target: "item_right",
+  connector: ['Flowchart', {
+    stub: 50,
+    alwaysRespectStubs: true,
+    gap: 20,
+    midpoint: 0.5,
+    cornerRadius: 20
+  }],
+  anchor: ["Right", "Left"]
+});
+jsPlumb.draggable("item_right");
+```
+
+图中箭头指示的拐点：midpoint 指定，如果是 0，观点靠近 source 端
+![](./assets/2020-02-20-21-19-03.png)
+</details>
 
 ### 1.3.3. Endpoints [todo]
 
@@ -222,7 +279,6 @@ jsPlumb.addEndpoint("someElement", {
 
 1. `String` - 有效的端点名，如 Dot、Rectangle。
 2. `[String, Object]` 数组 - 有效的端点名，对应的参数
-
 
 
 端点类型:
@@ -266,21 +322,68 @@ jsPlumb.addEndpoint("someElement", {
 
 [官网：Overlays ](https://jsplumb.github.io/jsplumb/overlays.html)
 
-Overlays可以理解为在连接线上的文字或者箭头之类的东东
+Overlays 可以理解为在连接线上的文字或者箭头之类的东东
 
-Overlays类型
-- Arrow - 箭头 可配置折线箭头
-- Label - 标签
-- PlainArrow - 平箭头（没有折叠）Arrow 的 foldback=1的特殊实例
-- Diamond - 钻石（菱形）Arrow 的 foldback=2的特殊实例
-- Custom - 可以是任意的 DOM 元素
+#### Overlays 类型
 
-Overlasy Location 覆盖物的位置
+- `Arrow` - 箭头 可配置折线箭头；由四个点控制：头部(head)、两个尾部点(tail points)、折返点(foldback)（允许缩进箭头的尾部）
+  - `width` - 箭尾的宽度
+  - `length` - 箭尾到箭头的距离
+  - `location` - 覆盖物出现在连线上的位置；
+    - [0, 1]：从 source 到 target 按比例出现
+    - 大于 1 的整数：到 source 的绝对距离
+    - 小于 -1 的整数：到 target 的绝对距离
+  - `direction`: 箭头的方向（source -> target）; 1 - 正向； -1 - 反向
+  - `foldback`: 折返点到箭头的距离（比例），默认 0.623
+  - `paintStyle`
+- `Label` - 标签
+  - `label` 要显示的文本
+  - `cssClass`
+  - `labelStyle` - `{font: '', fill: '', color: '', padding: '', borderWidth: '', borderStyle: ''}`
+  - `location`
+- `PlainArrow` - 平箭头（没有折叠）Arrow 的 foldback=1的特殊实例
+- `Diamond` - 钻石（菱形）Arrow 的 foldback=2的特殊实例
+- `Custom` - 可以是任意的 DOM 元素
+  - 需要使用 `create()` 返回 DOM 元素或者有效的选择器
 
-- `[0, 1]` 链接器上的比例值；0.5 代表连接器的重点
+#### Overlasy Location 覆盖物的位置
+
+- `[0, 1]` 链接器上的比例值；0.5 代表连接器的点
 - 大于 1 的整数，表示从起点沿连接器移动的绝对像素值
 - 小于 0 的整数，反向
-- 对于端点，适用同样的规则；但是是数组，是指位于端点中心的叠加层
+- 对于端点，适用同样的规则；但 location 被指定为 [x, y] 数组，是指位于端点中心的叠加层
+
+可以通过：
+- `getLocation` - 返回当前的位置
+- `setLocation` - 设置当前的位置
+
+#### Add Overlays
+
+可以通过 `jsPlumb.connect`, `jsPlumb.addEndpoint`, `jsPlumb.makeSource`(不能是 `jsPlumb.makeTarget`, 覆盖总是在连接源定义的)。
+
+还可以使用 `addOverlay` 给连接或端点添加覆盖；
+
+```js
+var e = jsPlumb.addEndpoint("someElement");
+e.addOverlay([ "Arrow", { width:10, height:10, id:"arrow" }]); 
+```
+
+<details>
+<summary>详细示例</summary>
+
+1、使用 `jsPlumb.connect` 定义
+
+带有默认选项的箭头，以及一个 “foo” 的文本标签
+```js
+jsPlumb.connect({
+  ...
+  overlays:[ 
+    "Arrow", 
+      [ "Label", { label:"foo", location:0.25, id:"myLabel" } ] // 可以通过 ID 删除此覆盖物或者修改其可见性
+    ],
+  ...
+});
+```
 
 ```js
 // 连线上overlay可以多个，
@@ -313,7 +416,83 @@ jsPlumb.connect({
 });
 ```
 
+2、通过 `jsPlumb.addEndpoint` 调用
+
+在这个例子中，使用 `connectorOverlays` 而不是 `overlays`。因为新的覆盖将引用端点的覆盖
+
+```js
+jsPlumb.addEndpoint("someDiv", {
+  ...
+  overlays:[
+    [ "Label", { label:"foo", id:"label", location:[-0.5, -0.5] } ]
+  ],
+  connectorOverlays:[ 
+    [ "Arrow", { width:10, length:30, location:1, id:"arrow" } ],
+    [ "Label", { label:"foo", id:"label" } ]
+  ],
+  ...
+});
+```
+
+![](./assets/2020-02-20-22-33-38.png)
+
+3、通过 `jsPlumb.makeSource` 调用
+
+注意：同样是用 `connectorOverlays`
+
+```js
+jsPlumb.makeSource("someDiv", {
+  ...
+  endpoint:{
+    connectorOverlays:[ 
+      [ "Arrow", { width:10, length:30, location:1, id:"arrow" } ], 
+      [ "Label", { label:"foo", id:"label" } ]
+    ]
+  }
+  ...
+});
+```
+
+</details>
+
+
+#### 其他方法
+
+**显示隐藏 Overlays**
+```js
+var overlay = connection.getOverlay("myLabel");
+
+// now you can hide this Overlay:
+overlay.setVisible(false);
+
+// there are also hide/show methods:
+overlay.show();
+overlay.hide();
+
+connection.hideOverlay("myLabel");
+connection.showOverlay("myLabel");
+```
+
+**Removing Overlays**
+
+```js
+var connection = jsPlumb.connect({
+  ...
+  overlays:[ 
+    "Arrow", 
+    [ "Label", { label:"foo", location:0.25 }, id:"myLabel" ]
+  ],
+  ...
+});     
+
+// time passes
+connection.removeOverlay("myLabel");
+```
+
+
 ### 1.3.5. Groups [todo]
+
+包含在某个元素中的一组元素，可以折叠，折叠后，连接到组成员上的连线被合并到组的折叠元素上。
 
 ## 1.4. 样式设置 [todo]
 

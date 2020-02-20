@@ -43,15 +43,27 @@
       /* global jsPlumb */
       jsPlumb.ready(function() {
         jsPlumb.connect({
+          isSource: true, isTarget: true,
           source: "item_left",
           target: "item_right",
           endpoint: "Rectangle",
           endpointStyle: { fill: "yellow" },
-          connector: ["Bezier", { curviness: 150 }],
-          // connector: ['Straight', {stub: 12}],
-          // connector: ['Flowchart']
-          // connector: ['StateMachine', {curviness: 50}],
-          // anchor: ['Left', 'Right']
+          // connector: ["Bezier", { curviness: 150 }],
+          // connector: ['Straight', {stub: 10, gap: 20}],
+          // connector: ['Flowchart'],
+          // connector: ['Flowchart', {
+          //   stub: 50,
+          //   alwaysRespectStubs: true,
+          //   gap: 20,
+          //   midpoint: 0.5,
+          //   cornerRadius: 20
+          // }],
+          connector: ['StateMachine', {
+            margin: 20,
+            curviness: 50,
+            proximityLimit: 10
+          }],
+          // anchor: ['Left', 'Right'],
           // anchor: ['Top', [0.5, 1, 0, 1, 0, 50]]
           anchor: ["Right", "AutoDefault"]
         });

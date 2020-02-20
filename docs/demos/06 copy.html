@@ -39,41 +39,53 @@
           anchor: ["Left", "Right"]
         };
 
-        jsPlumb.connect(
-          {
-            source: "item_left",
-            target: "item_right",
-            paintStyle: { stroke: "lightgray", strokeWidth: 3 },
-            endpointStyle: {
-              fill: "lightgray",
-              outlineStroke: "darkgray",
-              outlineWidth: 2
-            },
-            overlays: [
-              [
-                "Arrow",
-                {
-                  width: 22, // 箭头尾部的宽度
-                  length: 12, // 箭头头部到箭头尾部的距离
-                  location: 0.5,
-                  direction: 1,
-                  foldback: 0.6 // 箭头轴线上，尾部到头部的距离比
-                }
-              ]
-            ]
-          },
-          common
-        );
+        // jsPlumb.connect(
+        //   {
+        //     source: "item_left",
+        //     target: "item_right",
+        //     paintStyle: { stroke: "lightgray", strokeWidth: 1 },
+        //     endpointStyle: {
+        //       fill: "lightgray",
+        //       outlineStroke: "darkgray",
+        //       outlineWidth: 2
+        //     },
+        //     overlays: [
+        //       [
+        //         "Arrow",
+        //         {
+        //           width: 12, // 箭头尾部的宽度
+        //           length: 12, // 箭头头部到箭头尾部的距离
+        //           location: -50,
+        //           direction: 1,
+        //           foldback: 0.4 // 箭头轴线上，尾部到头部的距离比
+        //         },
+        //       ],
+        //       ["Label", { label: "foo", location: 0.25, id: "myLabel" }]
+        //     ]
+        //   },
+        //   common
+        // );
         jsPlumb.addEndpoint("item_left", {
+          isTarget: true,
+          isSource: true,
           // anchor: "Left",
-          // overlays: [
-          //   ["Label", { label: "foo", id: "label", location: [0.5, -0.5] }]
-          // ],
+          overlays: [
+            ["Label", { label: "foo", id: "label", location: [0.5, -0.5] }]
+          ],
           // 这个配置加上好像没什么效果
           connectorOverlays: [
             ["Arrow", { width: 100, length: 30, location: 1, id: "arrow" }],
             ["Label", { label: "foo", id: "label" }]
           ]
+        });
+        jsPlumb.addEndpoint("item_right", {
+          isTarget: true,
+          isSource: true,
+          anchor: "Top",
+          connectorOverlays: [
+            ["Arrow", { width: 100, length: 30, location: 1, id: "arrow" }],
+          ]
+          // endpoint: ['Rectangle', { width: 25 }]
         });
 
         jsPlumb.draggable("item_left");
