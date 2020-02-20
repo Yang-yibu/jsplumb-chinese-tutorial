@@ -68,6 +68,9 @@
     - [beforeDrag 连接拖拽前](#beforedrag-%e8%bf%9e%e6%8e%a5%e6%8b%96%e6%8b%bd%e5%89%8d)
     - [beforeStartDetach 连接开始断开](#beforestartdetach-%e8%bf%9e%e6%8e%a5%e5%bc%80%e5%a7%8b%e6%96%ad%e5%bc%80)
 - [4. jsPlumb默认配置简介](#4-jsplumb%e9%bb%98%e8%ae%a4%e9%85%8d%e7%bd%ae%e7%ae%80%e4%bb%8b)
+  - [默认值](#%e9%bb%98%e8%ae%a4%e5%80%bc)
+  - [默认参数的简介](#%e9%bb%98%e8%ae%a4%e5%8f%82%e6%95%b0%e7%9a%84%e7%ae%80%e4%bb%8b)
+  - [通过 getInstance 提供默认值](#%e9%80%9a%e8%bf%87-getinstance-%e6%8f%90%e4%be%9b%e9%bb%98%e8%ae%a4%e5%80%bc)
 - [5. 工具函数](#5-%e5%b7%a5%e5%85%b7%e5%87%bd%e6%95%b0)
   - [5.1. 重绘某个元素 jsPlumb.revalidate](#51-%e9%87%8d%e7%bb%98%e6%9f%90%e4%b8%aa%e5%85%83%e7%b4%a0-jsplumbrevalidate)
   - [5.2. 重绘所有元素 jsPlumb.repaintEverything](#52-%e9%87%8d%e7%bb%98%e6%89%80%e6%9c%89%e5%85%83%e7%b4%a0-jsplumbrepainteverything)
@@ -138,17 +141,17 @@
 #### 静态锚点 Static Anchors
 
 jsPlumb 有九个默认的锚点位置，可以用于指定连接器连接到元素的位置。他们是元素的四个角、元素中心和元素每条边的中点。
-- Top (TopCenter) `[0.5, 0, 0, -1]` 
-- TopRight
-- Right (RightMiddle)
-- BottomRight
-- Bottom (BottomCenter)
-- BottomLeft
-- Left (LeftMiddle) `[0, 0.5, -1, 0]` 
-- TopLeft
-- Center
+- `Top` === `TopCenter` === `[0.5, 0, 0, -1]` 
+- `TopRight`
+- `Right` === `RightMiddle`
+- `BottomRight`
+- `Bottom` === `BottomCenter`
+- `BottomLeft`
+- `Left` === `LeftMiddle` === `[0, 0.5, -1, 0]` 
+- `TopLeft`
+- `Center`
 
-这些特殊的字符串实际上是底层基于数组语法的简写 `[x, y, dx, dy]` 。`x, y` 是以左上角为原点，横向 x 轴，竖向 y 轴，取值为 `[0, 1]` 。`dx, dy` 指定与锚点关联的曲线的方向值，取值为 `0,1,-1`。
+这些特殊的字符串底层实际上是基于数组语法的简写 `[x, y, dx, dy]` 。`x, y` 是以左上角为原点，横向 x 轴，竖向 y 轴，取值为 `[0, 1]` 。`dx, dy` 指定与锚点关联的曲线的方向值，取值为 `0,1,-1`。
 
 ```js
 jsPlumb.connect({...., anchor:"Bottom", ... });
@@ -158,7 +161,7 @@ jsPlumb.connect({...., anchor:[ 0.5, 1, 0, 1 ], ... });
 
 
 
-锚点偏移
+**锚点偏移**
 
 数组语法除了给定锚点的位置与方向外，还可以提供两个参数，用于定义距给定的位置以像素为单位的偏移量
 
@@ -677,6 +680,7 @@ jsPlumb.ready(function () {
     })
 ```
 
+<a id="jump-resize"></a>
 ## 2.10. 节点改变尺寸
 
 demo: https://wdd.js.org/jsplumb-chinese-tutorial/demos/10.html
@@ -1516,19 +1520,19 @@ function beforeStartDetach(info) {}
 
 # 4. jsPlumb默认配置简介
 
-参考地址: https://github.com/jsplumb/jsplumb/blob/da6688b86f/doc/wiki/defaults.md
+[官方 DOC 介绍：/doc/wiki/defaults](https://github.com/jsplumb/jsplumb/blob/da6688b86f/doc/wiki/defaults.md)
 
-jsPlumb的配置项有很多，如果你不主动去设置，那么jsPlumb就使用默认的配置。
+jsPlumb 的配置项有很多，如果你不主动去设置，那么 jsPlumb 就使用默认的配置。
 
 另外建议你不要修改默认的配置，而是使用自定义的方式。
 
-另外一点要注意，如果你想修改默认配置，那么使用importDefaults方法，并且属性的首字母要大写。如果你用addEndpoint, 并使用类似maxConnections的属性，那么首字母要小写。
+另外一点要注意，如果你想修改默认配置，那么使用 `importDefaults` 方法，并且属性的首字母要大写。如果你用 `addEndpoint`, 并使用类似 `maxConnections` 的属性，那么首字母要小写。
 
-参见demo: https://wdd.js.org/jsplumb-chinese-tutorial/demos/17.html   demo上需要你自己手动拖动创建连接。
+参见 demo: https://wdd.js.org/jsplumb-chinese-tutorial/demos/17.html   demo 上需要你自己手动拖动创建连接。
 
 ![](./images/20181015195143_kNd9Sd_Jietu20181015-194116.jpeg)
 
-```
+```js
 var common = {
   isSource: true,
   isTarget: true,
@@ -1541,7 +1545,10 @@ jsPlumb.addEndpoint('item_left', {
 }, common)
 ```
 
-```
+## 默认值
+
+```js
+// jsPlumb 自带的默认值存储在 jsPlumb.Defaults 中，这是一个 JavaScript 对象，具体如下
 Anchor : "BottomCenter",
 Anchors : [ null, null ],
 ConnectionsDetachable   : true,
@@ -1574,37 +1581,13 @@ Scope : "jsPlumb_DefaultScope"
 ![](./images/20180509225507_aRk1UV_Jietu20180509-225433.jpeg)
 
 
+**在脚本加载之后，jsPlumb 指定了一些默认行为：**
+- 连接器是用宽13px，半透明的红色线绘制的
+- 拖动元素的时候，使用十字光标
+- 源端点半径是 7 的圆点，目标端点半径是 11 的圆点
+- 源端点时蓝色的，目标端点时绿色的
 
-默认参数的简介:
-
-- `Anchor` 锚点，即端点连接的位置
-- `Anchors` 多个锚点 [源锚点，目标锚点].
-- `Connector` 连接
-- `ConnectionsDetachable` 节点是否可以用鼠标拖动使其断开，默认为true。即用鼠标连接上的连线，也可以使用鼠标拖动让其断开。设置成false，可以让其拖动也不会自动断开。
-- `Container` 连线的容器
-- `DoNotThrowErrors` 是否抛出错误
-- `ConnectionOverlays` 连接遮罩层
-- `DragOptions` 拖动设置
-- `DropOptions` 拖放设置
-- `Endpoint` 端点
-- `Endpoints` 数组形式的，[源端点，目标端点] 
-- `EndpointOverlays` 端点遮罩层
-- `EndpointStyle` 端点样式
-- `EndpointStyles` [源端点样式，目标端点样式]
-- `EndpointHoverStyle` 端点鼠标经过的样式
-- `EndpointHoverStyles` [源端点鼠标经过样式，目标端点鼠标经过样式]
-- `HoverPaintStyle` 鼠标经过连接线时的样式
-- `LabelStyle` 标签样式
-- `LogEnabled` 是否启用日志
-- `Overlays` 连接线和端点的遮罩层样式
-- `MaxConnections` 端点最大连接线数量默认为1， 设置成-1可以表示无数个连接
-- `PaintStyle` 连线样式
-- `ReattachConnections` 端点是否可以再次重新连接
-- `RenderMode` 渲染模式，默认是svg
-- `Scope` 作用域，用来区分哪些端点可以连接，作用域相同的可以连接
-
-
-```
+```js
 // 可以使用importDefaults，来重写某些默认设置
 jsPlumb.importDefaults({
   PaintStyle : {
@@ -1615,17 +1598,93 @@ jsPlumb.importDefaults({
   Endpoints : [ [ "Dot", { radius:7 } ], [ "Dot", { radius:11 } ] ],
   EndpointStyles : [{ fill:"#225588" }, { fill:"#558822" }]
 });
+
+jsPlumb.ready(function() {
+  jsPlumb.addEndpoint("item_left", { anchor: "Right", isSource: true });
+  jsPlumb.addEndpoint("item_right", { anchor: "Left", isTarget: true });
+
+  jsPlumb.connect({
+    source: "item_left",
+    target: "item_right",
+    // endpoint: "Dot"
+  });
+
+  jsPlumb.draggable("item_left");
+  jsPlumb.draggable("item_right");
+});
+```
+
+## 默认参数的简介
+
+- `Anchor` - 锚点，即端点连接的位置
+- `Anchors` - 多个锚点 [源锚点，目标锚点].
+- `Connector` - 连接
+- `ConnectionsDetachable` - 节点是否可以用鼠标拖动使其断开，默认为true。即用鼠标连接上的连线，也可以使用鼠标拖动让其断开。设置成false，可以让其拖动也不会自动断开。
+- `Container` - 连线的容器；
+  - 用于给 jsPlumb 创作的父元素。不可以使用 `importDefaults` 进行设置，可以使用 `getInstance` 获取获取默认值的时候提供它时，才会生效；如果修改实例的容器，可以使用 `setContainer`
+- `DoNotThrowErrors` 是否抛出错误；如果要求的 Anchor、Endpoint 或者 Connector 不存在
+- `ConnectionOverlays` - 默认添加到每个连接器上的遮罩层
+- `DragOptions` - 拖动设置
+- `DropOptions` - 拖放设置
+  - 默认选项用于配置任意目标节点的可放置行为
+- `Endpoint` - 端点
+- `Endpoints` - 数组形式的，[源端点，目标端点] 
+  - 用于 `jsPlumb.connect`
+- `EndpointOverlays` - 端点遮罩层
+- `EndpointStyle` - 端点样式
+- `EndpointStyles` - [源端点样式，目标端点样式]
+- `EndpointHoverStyle` - 端点鼠标经过的样式
+- `EndpointHoverStyles` - [源端点鼠标经过样式，目标端点鼠标经过样式]
+- `HoverPaintStyle` - 鼠标经过连接线时的样式
+- `LabelStyle` - 标签默认样式；推荐使用 CSS 设置
+- `LogEnabled` - 是否启用日志
+- `Overlays` - 连接线和端点的遮罩层样式
+- `MaxConnections` - 端点最大连接线数量默认为1， 设置成-1可以表示无数个连接
+- `PaintStyle` - 连线样式
+- `ReattachConnections` - 端点是否可以再次重新连接
+- `RenderMode` - 渲染模式，默认是svg
+- `Scope` - 作用域，用来区分哪些端点可以连接，作用域相同的可以连接
+
+## 通过 getInstance 提供默认值
+
+使用 `jsPlumb.getInstance` 创建新的实例时，可以为该实例提供默认值作为参数。
+
+```js
+jsPlumb.getInstance({
+  PaintStyle : {
+    strokeWidth:13,
+    stroke: 'rgba(200,0,0,100)'
+  },
+  DragOptions : { cursor: "crosshair" },
+  Endpoints : [ [ "Dot", { radius:7 } ], [ "Dot", { radius:11 } ] ],
+  EndpointStyles : [
+    { fill:"#225588" }, 
+    { fill:"#558822" }
+  ]
+});
 ```
 
 # 5. 工具函数
+
+[官方 doc：Utility Functions](https://jsplumb.github.io/jsplumb/utilities.html)
+
+可能出现的常见场景，以及 jsPlumb 本身提供了哪些函数给与帮助。
+
 ## 5.1. 重绘某个元素 jsPlumb.revalidate
 
+[查看相关示例 Demo](#jump-resize)
+
+假如你使用 `jsPlumb.draggable` 初始化可拖拽元素，你可能不需要指示 jsPlumb 重绘。然而，你可能会遇到以下场景：
+- 你已经调整了元素的大小，同时需要重新计算端点在改元素上的位置
+- 你以程序的方式移动了元素
+- 实际上没有通过 `jsPlumb.draggable` 初始化可拖拽元素
+
+此时需要强制重绘，可以使用：
 ```js
 jsPlumb.revalidate(el)
 ```
 
 关于 el:
-
 - a string, representing the id of some element
 - a list of strings, representing the ids of some elements
 - a DOM element
@@ -1711,6 +1770,7 @@ jsPlumb.show("window5", true); // 显示节点的所有连线和端点
 
 
 # 6. 样式修改
+
 ## 6.1. 通过css添加样式
 
 参考：http://jsplumb.github.io/jsplumb/styling-via-css.html
@@ -1744,28 +1804,30 @@ jsPlumb.connect({
 
 ```js
 [
-{
-  id: 1,
-  link: ''
-}, 
-{
-  id: 2,
-  link: ''
-}]
+  {
+    id: 1,
+    link: ''
+  }, 
+  {
+    id: 2,
+    link: ''
+  }
+]
 ```
 
 当你收到连接建立事件后，例如1连接到了2， 你需要修改这个数据结构。
 
 ```js
 [
-{
-  id: 1,
-  link: '2'
-}, 
-{
-  id: 2,
-  link: ''
-}]
+  {
+    id: 1,
+    link: '2'
+  }, 
+  {
+    id: 2,
+    link: ''
+  }
+]
 ```
 
 
