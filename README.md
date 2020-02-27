@@ -155,7 +155,7 @@ jsPlumb 有九个默认的锚点位置，可以用于指定连接器连接到元
 - `TopLeft`
 - `Center`
 
-这些特殊的字符串底层实际上是基于数组语法的简写 `[x, y, dx, dy]` 。`x, y` 是以左上角为原点，横向 x 轴，竖向 y 轴，取值为 `[0, 1]` 。`dx, dy` 指定与锚点关联的曲线的方向值，取值为 `0,1,-1`。
+这些特殊的字符串底层实际上是基于数组语法的简写 `[x, y, dx, dy]` 。`x, y` 是以左上角为原点，横向 x 轴，竖向 y 轴，取值为 `[0, 1]` 。`dx, dy` 指定与锚点关联的曲线的方向值，`dx` 为横轴放射线，取值为 `0,1,-1`。
 
 ```js
 jsPlumb.connect({...., anchor:"Bottom", ... });
@@ -164,10 +164,37 @@ jsPlumb.connect({...., anchor:[ 0.5, 1, 0, 1 ], ... });
 ```
 
 
+<details>
+<summary>dx-dy 值示例</summary>
+
+经实际测试，发现 `x-y` 决定了锚点的位置，从 `x-y` 到 `dx-dy` 的连线决定了曲线的方向(TODO: 应该类似于贝塞尔曲线中的控制点)。dx-dy 的取值为 -1、0、1 三个值，实际测试中，其他的数值也不会报错
+示例，官方 github-demo: [demo/animation/dom.js](https://github.com/jsplumb/jsplumb/blob/master/demo/animation/demo.js)
+
+```js
+anchor: [0.5, 0.5, 0, -1]
+```
+![](./assets/2020-02-24-09-29-47.png)
+
+```js
+anchor: [0.5, 0.5, 0, 1]
+```
+![](./assets/2020-02-24-09-32-09.png)
+
+```js
+anchor: [0.5, 0.5, 0, 2]
+```
+![](./assets/2020-02-24-09-33-10.png)
+
+</details>
+
 
 **锚点偏移**
 
-数组语法除了给定锚点的位置与方向外，还可以提供两个参数，用于定义距给定的位置以像素为单位的偏移量
+数组语法除了给定锚点的位置与方向外，还可以提供两个参数，用于定义距给定的位置以像素为单位的偏移量。
+
+```js
+[x, y, dx, dy, offsetX, offsetY]
+```
 
 `jsPlumb.connect({...., anchor:[ 0.5, 1, 0, 1, 0, 50 ], ... })` Bottom 位置的锚点，向下偏移 50px
 
@@ -315,7 +342,7 @@ jsPlumb.draggable("item_right");
 | {}.isTarget       | ..             | ..       |                                                              |
 | {}.connector      | String\|Object | 否       | 要使用的链接器的类型。已知连接器类型的单个字符串 `Bezier` 。或一个数组 `[name, params]` 如 `[ "Bezier", { curviness:160 } ]` |
 | {}.maxConnections | Integer 整数   | 否       | 默认 1                                                       |
-
+| {}.dropOptions | Object | 否 | 如果 `isTarget` 设置为 `true`，可以使用这个参数为基础库的 `drop` 方法提供参数；默认是 `null` |
 
 
 ### 1.3.4. Overlays [todo]
@@ -546,9 +573,26 @@ endpoint | String | 可选 | 端点类型，形状
 uuids | String[] | 可选 | 要连接的两个端点（Endpoints）可选的 UUIDS 数组. 如果提供这个参数，就不需要提供 `source` 或 `target`<br />可以使用 [node-uuid](https://github.com/uuidjs/uuid) 生成唯一 uid 
 type | String | 可选 | 可选的连接器（连线 Connection）的类型
 
+
 [>>> connect方法详情](https://github.com/jsplumb/jsplumb/blob/da6688b86fbfba621bf3685e4431a4d9be7213b4/doc/api/jsplumb-api.js#L76)
 
+也可以使用 Connection 构造函数的参数；
+[官方 API：Connection 构造函数参数](https://github.com/jsplumb/jsplumb/doc/api/connection-api.js)
 
+[官方示例 demo](https://github.com/jsplumb/jsplumb/blob/master/demo/chart/demo.js#L44)
+
+```js
+/** 
+ * doc/api/connection-api.js
+ * detachable: 定义是否可以使用鼠标分离连接
+ * reattach: 定义连接被从终点拖离到空白区域，是否重新获取连接
+ *   - 默认 false
+ *   - 可以落到另一个目标端点上
+ */
+instance.connect({
+  uuids: ["chartWindow3-bottom", "chartWindow6-top" ], overlays: overlays, detachable: true, reattach: true
+});
+```
 
 ## 2.2. 可拖动节点
 
@@ -1882,8 +1926,10 @@ jsPlumb.repaintEverything()
 节点的ID对jsPlumb的重要性不言而喻，有时候我们需要改变节点的id, 那么需要显式的告诉jsPlumb节点id改变了。
 
 ```js
+// 希望 jsPlumb 负责修改 DOM 中的 ID，自动更新引用
 jsPlumb.setId(el, newId);
-// 或者
+
+// 已经修改了元素的 ID，只需要 jsPlumb 更新引用
 jsPlumb.setIdChanged(oldId, newId);
 ```
 
